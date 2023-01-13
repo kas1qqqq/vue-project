@@ -1,0 +1,54 @@
+import { ref, isRef, unref, watchEffect } from 'vue'
+import type { ComputedRef } from 'vue'
+
+export function useQuoteApi(url: ComputedRef<string>) {
+  const data = ref(null)
+  const error = ref(null)
+
+  async function loadQuotes() {
+    // reset state before fetching..
+    data.value = null
+    error.value = null
+
+    // resolve the url value synchronously so it's tracked as a
+    // dependency by watchEffect()
+    const urlValue = unref(url)
+
+    try {
+      // artificial delay / random error
+      await timeout()
+      // unref() will return the ref value if it's a ref
+      // otherwise the value will be returned as-is
+      const res = await fetch(urlValue)
+      data.value = await res.json()
+    } catch (e: any) {
+      error.value = e
+      throw new Error(e)
+    }
+  }
+
+  if (isRef(url)) {
+    // setup reactive re-fetch if input URL is a ref
+    watchEffect(loadQuotes)
+  } else {
+    // otherwise, just fetch once
+    loadQuotes()
+  }
+
+  return { data, error, retry: loadQuotes }
+}
+
+// artificial delay
+function timeout() {
+  return new Promise<void>((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() > 0.3) {
+        resolve()
+      } else {
+        reject(
+          new Error('Oops! Error encountered. Cannot load the citate list.')
+        )
+      }
+    }, 300)
+  })
+}
