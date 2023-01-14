@@ -1,6 +1,6 @@
-# vue-project
+# Vue 3 Composition API Project
 
-This template should help get you started developing with Vue 3 in Vite.
+The project with getting data from the backend server through third-party API, routing, filtering, pagination, chart visualizations, and working with the map and local storage.
 
 ## Recommended IDE Setup
 
