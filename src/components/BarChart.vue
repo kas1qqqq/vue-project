@@ -18,8 +18,8 @@ const URL: string = 'https://jsonplaceholder.typicode.com/comments'
 
 const isLoaded = ref<boolean | null>(null)
 const isError = ref<boolean | null>(null)
-const chartData = ref(null)
-const chartLabels = ref(null)
+const chartData = ref<any>(null)
+const chartLabels = ref<any>(null)
 
 async function getChartData() {
   isLoaded.value = false

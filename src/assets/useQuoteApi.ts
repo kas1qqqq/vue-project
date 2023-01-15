@@ -2,8 +2,8 @@ import { ref, isRef, unref, watchEffect } from 'vue'
 import type { ComputedRef } from 'vue'
 
 export function useQuoteApi(url: ComputedRef<string>) {
-  const data = ref(null)
-  const error = ref(null)
+  const data = ref<any>(null)
+  const error = ref<any>(null)
 
   async function loadQuotes() {
     // reset state before fetching..

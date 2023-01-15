@@ -19,7 +19,7 @@ import Greeting from './components/Greeting.vue'
           <RouterLink class="nav" to="/map">Map</RouterLink>
         </nav>
       </div>
-      <Greeting msg="ue 3 Test Task" />
+      <Greeting msg="ue 3 Project" />
     </div>
   </header>
 
