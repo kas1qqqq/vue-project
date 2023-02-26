@@ -268,7 +268,7 @@ function sortByAz(): void {
 .skateboarding {
   width: 1.5rem;
   height: 1.5rem;
-  left: -7.9rem;
+  left: -8.6rem;
   top: 0.2rem;
   transform: rotate(45deg);
 }
@@ -276,7 +276,7 @@ function sortByAz(): void {
 .skateboarding-run {
   width: 1.5rem;
   height: 1.5rem;
-  left: -7.9rem;
+  left: -8.6rem;
   top: 0.47rem;
   animation-name: skateboarding;
   animation-duration: 3s;
@@ -288,7 +288,7 @@ function sortByAz(): void {
   0% {
     transform: rotate(45deg);
     top: 0.2rem;
-    left: -7.9rem;
+    left: -8.6rem;
   }
   10% {
     top: 0.42rem;
@@ -304,7 +304,7 @@ function sortByAz(): void {
   100% {
     transform: rotate(-45deg);
     top: 0.2rem;
-    left: 7.9rem;
+    left: 8.6rem;
   }
 }
 
