@@ -9,7 +9,6 @@
 </template>
 
 <script>
-import MapView from '@/views/MapView.vue'
 import leaflet from 'leaflet'
 import { onMounted } from 'vue'
 
