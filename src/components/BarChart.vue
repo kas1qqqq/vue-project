@@ -21,13 +21,27 @@ const isError = ref<boolean | null>(null)
 const chartData = ref<any>(null)
 const chartLabels = ref<any>(null)
 
+const data = computed(() => ({
+  labels: chartLabels.value,
+  datasets: [
+    {
+      label: "Person's email length",
+      data: chartData.value,
+      backgroundColor: 'seagreen',
+      borderColor: 'rgb(45, 45, 45)',
+      borderWidth: 1,
+      borderRadius: 4,
+    },
+  ],
+}))
+
 async function getChartData() {
   isLoaded.value = false
   isError.value = false
+
   try {
     // artificial delay / random error
     await timeout()
-
     const res = await axios.get(URL)
 
     chartData.value = res.data
@@ -58,28 +72,16 @@ function timeout() {
     }, 300)
   })
 }
-
-const data = computed(() => ({
-  labels: chartLabels.value,
-  datasets: [
-    {
-      label: "Person's email length",
-      data: chartData.value,
-      backgroundColor: 'seagreen',
-      borderColor: 'rgb(45, 45, 45)',
-      borderWidth: 1,
-      borderRadius: 4,
-    },
-  ],
-}))
 </script>
 
 <template>
   <div class="wrapper">
     <Bar v-if="isLoaded" :data="data" />
+
     <h1 v-if="!isLoaded && !isError" class="chart-loading">
       Loading charts...
     </h1>
+
     <div v-if="isError" class="wrapper-error">
       <p>Oops! Error encountered. Cannot load the chart.</p>
       <button class="btn" @click="getChartData">Retry</button>

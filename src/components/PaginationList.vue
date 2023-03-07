@@ -5,7 +5,7 @@ import PaginationComponent from './PaginationComponent.vue'
 import { usePostsApi } from '../assets/usePostsApi'
 
 const currentPage = ref<number>(1)
-const rowsPerPage = ref<number>(10)
+const rowsPerPage = ref<number>(3)
 const isSortAz = ref<boolean>(false)
 
 const {
@@ -26,6 +26,7 @@ function sortByAz(): void {
       post_a.title > post_b.title ? 1 : -1
     )
   }
+
   if (!isSortAz.value) {
     posts.value.map((post) => post.id > 1)
     posts.value.sort((post_a: { id: number }, post_b: { id: number }) =>
@@ -47,12 +48,14 @@ function sortByAz(): void {
           Sort A-z
         </button>
       </div>
+
       <ul>
         <li v-for="post in posts" :key="post.id" class="wrapper-posts">
           <div class="posts-title">{{ post.title }}</div>
           <div class="posts-body">{{ post.body }}</div>
         </li>
       </ul>
+
       <pagination-component
         class="pagination-component"
         v-model="currentPage"
@@ -60,11 +63,14 @@ function sortByAz(): void {
       />
     </div>
   </Transition>
+
   <div v-if="posts.length && !isError" class="h-line"></div>
+
   <div v-if="isError" class="wrapper-error">
     <p id="z-index-up">
       Oops! Error encountered. Cannot load the pagination list.
     </p>
+
     <div class="wrapper-skateboarding">
       <vue-element-loading
         :active="isError"
@@ -73,9 +79,10 @@ function sortByAz(): void {
       >
         <img
           :class="isRetryLoadPosts ? 'skateboarding-run' : 'skateboarding'"
-          src="../assets/Skateboarding.gif"
+          src="../assets/images/Skateboarding.gif"
         />
       </vue-element-loading>
+
       <button
         :class="isRetryLoadPosts ? 'btn-run' : 'btn'"
         class="z-index-up"
@@ -326,6 +333,7 @@ function sortByAz(): void {
   font-weight: 500;
   text-transform: capitalize;
   font-size: 1rem;
+  color: #F3AB26;
 }
 
 .posts-body {

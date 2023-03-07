@@ -3,11 +3,13 @@
     <div class="notif">
       <p>If you leave one point, the local storage will be cleared.</p>
     </div>
+
     <div id="map"></div>
   </main>
 </template>
 
 <script>
+import MapView from '@/views/MapView.vue'
 import leaflet from 'leaflet'
 import { onMounted } from 'vue'
 
@@ -25,6 +27,7 @@ export default {
 
     onMounted(() => {
       map = leaflet.map('map').setView([49, 32], 5)
+
       leaflet
         .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
@@ -52,6 +55,7 @@ export default {
             .addTo(map)
           previousMarkers._icon.classList.add('previous-marker-hue')
         }
+
         if (getArrOfCoords.length === 1) {
           localStorage.clear()
         }
@@ -83,6 +87,7 @@ export default {
   margin-bottom: 2rem;
   font-size: 0.9rem;
   color: rgba(250, 250, 210, 0.3);
+  user-select: none;
   animation-name: notif;
   animation-duration: 3s;
   animation-iteration-count: infinite;

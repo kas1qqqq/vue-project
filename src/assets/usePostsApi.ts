@@ -29,20 +29,19 @@ export function usePostsApi(
     isError.value = false
 
     try {
-      // artificial delay / random error
+      // artificial delay and random error
       await timeout()
-
       const res = await axios.get(URL)
-
-      posts.value = res.data.slice(0, 50)
+      posts.value = res.data.slice(0, 15)
     } catch (e: any) {
       isError.value = true
-      throw new Error(e)
+      // throw new Error(e)
     }
   }
 
   const retryWithDelay = () => {
     isRetryLoadPosts.value = true
+
     setTimeout(() => {
       isRetryLoadPosts.value = false
       loadPosts()

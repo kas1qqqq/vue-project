@@ -8,7 +8,7 @@ interface PaginationConfig<T> {
 }
 
 export function usePagination<T>(config: PaginationConfig<T>) {
-  const rowsPerPage = config.rowsPerPage || ref(100)
+  const rowsPerPage = config.rowsPerPage || ref(15)
 
   const paginatedArray = computed(() =>
     config.arrayToPaginate.value.slice(

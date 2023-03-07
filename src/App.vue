@@ -12,7 +12,7 @@ import Greeting from './components/Greeting.vue'
           <img
             alt="Vue logo"
             class="logo"
-            src="@/assets/logo.svg"
+            src="@/assets/images/logo.svg"
             width="50"
             height="50"
           />

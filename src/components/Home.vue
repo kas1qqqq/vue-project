@@ -5,7 +5,8 @@ import { useQuoteApi } from '../assets/useQuoteApi.js'
 import BarChart from './BarChart.vue'
 import PaginationList from './PaginationList.vue'
 
-const baseUrl: string = 'https://dummyjson.com/quotes?limit=5'
+const baseUrl: string = 'https://dummyjson.com/quotes?limit=3'
+
 const url: ComputedRef<string> = computed(() => baseUrl)
 const { data, error, retry } = useQuoteApi(url)
 const isSortAz = ref<boolean>(false)
@@ -16,6 +17,7 @@ const sortByAz = () => {
     (quote_a: { author: string }, quote_b: { author: string }) =>
       quote_a.author > quote_b.author ? 1 : -1
   )
+
   if (isSortZa.value) isSortZa.value = !isSortZa.value
   if (!isSortZa.value) isSortAz.value = !isSortAz.value
 }
@@ -25,6 +27,7 @@ const sortByZa = () => {
     (quote_a: { author: string }, quote_b: { author: string }) =>
       quote_a.author < quote_b.author ? 1 : -1
   )
+
   if (isSortAz.value) isSortAz.value = !isSortAz.value
   if (!isSortAz.value) isSortZa.value = !isSortZa.value
 }
@@ -39,12 +42,15 @@ const sortByZa = () => {
           try connecting to VPN.
         </p>
       </div>
+
       <PaginationList />
       <BarChart />
+
       <div v-if="error" class="wrapper-error">
         <p>{{ error.message }}</p>
         <button class="btn" @click="retry">Retry</button>
       </div>
+
       <div v-else-if="data">
         <div v-if="data" class="wrapper-btn">
           <button
@@ -54,6 +60,7 @@ const sortByZa = () => {
           >
             Sort A-z
           </button>
+
           <button
             :class="isSortZa ? 'btn-sort-clicked' : ''"
             class="btn"
@@ -62,6 +69,7 @@ const sortByZa = () => {
             Sort Z-a
           </button>
         </div>
+
         <ul>
           <li
             v-for="quote in data.quotes"
@@ -73,6 +81,7 @@ const sortByZa = () => {
           </li>
         </ul>
       </div>
+
       <h1 v-else class="quotes-loading">Loading quotes...</h1>
     </header>
   </Transition>
@@ -106,6 +115,7 @@ header {
   margin-bottom: 2rem;
   font-size: 0.9rem;
   color: rgba(250, 250, 210, 0.3);
+  user-select: none;
   animation-name: notif;
   animation-duration: 3s;
   animation-iteration-count: infinite;
@@ -201,10 +211,11 @@ header {
   font-weight: 500;
   text-transform: capitalize;
   font-size: 1rem;
+  color: #1a73e8;
 }
 
 .quotes-quote {
-  color: grey;
+  color: #96b5d3;
   font-size: 0.9rem;
 }
 
