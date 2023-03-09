@@ -138,7 +138,7 @@ function sortByAz(): void {
 }
 
 .h-line {
-  width: 80%;
+  width: 100%;
   height: 0.3rem;
   border-radius: 0.2rem;
   background: rgb(31, 31, 31);
@@ -149,6 +149,7 @@ function sortByAz(): void {
     rgba(31, 31, 31, 0.8) 100%
   );
   margin-top: 1rem;
+  opacity: 0.2;
 }
 
 .wrapper {
@@ -326,14 +327,14 @@ function sortByAz(): void {
   margin: 1.4rem 6rem 0 6rem;
   display: flex;
   flex-direction: column;
-  padding: 0.5rem;
+  padding: 1rem 2rem;
 }
 
 .posts-title {
   font-weight: 500;
   text-transform: capitalize;
   font-size: 1rem;
-  color: #F3AB26;
+  color: #f3ab26;
 }
 
 .posts-body {

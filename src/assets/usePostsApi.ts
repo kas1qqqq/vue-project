@@ -35,7 +35,7 @@ export function usePostsApi(
       posts.value = res.data.slice(0, 15)
     } catch (e: any) {
       isError.value = true
-      // throw new Error(e)
+      console.error('There was an artificial error in PostApi. Please try again.')
     }
   }
 

@@ -55,7 +55,9 @@ async function getChartData() {
     isLoaded.value = true
   } catch (e: any) {
     isError.value = true
-    throw new Error(e)
+    console.error(
+      'There was an artificial error in ChartApi. Please try again.'
+    )
   }
 }
 getChartData()
@@ -141,7 +143,7 @@ function timeout() {
 }
 
 .h-line {
-  width: 80%;
+  width: 100%;
   height: 0.3rem;
   border-radius: 0.2rem;
   background: rgb(31, 31, 31);
@@ -152,6 +154,7 @@ function timeout() {
     rgba(31, 31, 31, 0.8) 100%
   );
   margin-top: 1rem;
+  opacity: 0.2;
 }
 
 @media (max-width: 600px) {

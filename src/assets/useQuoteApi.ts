@@ -23,7 +23,7 @@ export function useQuoteApi(url: ComputedRef<string>) {
       data.value = await res.json()
     } catch (e: any) {
       error.value = e
-      // throw new Error(e)
+      console.error('There was an artificial error in QuoteApi. Please try again.')
     }
   }
 

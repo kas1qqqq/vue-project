@@ -5,6 +5,12 @@ import { useQuoteApi } from '../assets/useQuoteApi.js'
 import BarChart from './BarChart.vue'
 import PaginationList from './PaginationList.vue'
 
+interface QuotesDataType {
+  id: number
+  quote: string
+  author: string
+}
+
 const baseUrl: string = 'https://dummyjson.com/quotes?limit=3'
 
 const url: ComputedRef<string> = computed(() => baseUrl)
@@ -31,16 +37,19 @@ const sortByZa = () => {
   if (isSortAz.value) isSortAz.value = !isSortAz.value
   if (!isSortAz.value) isSortZa.value = !isSortZa.value
 }
+
+const deleteQuote = (idx: number) => {
+  data.value.quotes = data.value.quotes.filter(
+    (el: QuotesDataType) => el.id !== idx
+  )
+}
 </script>
 
 <template>
   <Transition name="fade">
     <header>
       <div class="notif">
-        <p>
-          If you see errors, please calm down, it's artificial.<br />Otherwise,
-          try connecting to VPN.
-        </p>
+        <p>If you see errors, please calm down, it's artificial.</p>
       </div>
 
       <PaginationList />
@@ -52,7 +61,7 @@ const sortByZa = () => {
       </div>
 
       <div v-else-if="data">
-        <div v-if="data" class="wrapper-btn">
+        <div v-if="data && data.quotes.length !== 0" class="wrapper-btn">
           <button
             :class="isSortAz ? 'btn-sort-clicked' : ''"
             class="btn"
@@ -70,13 +79,22 @@ const sortByZa = () => {
           </button>
         </div>
 
+        <div v-if="data.quotes.length === 0">
+          <button class="btn load-btn" @click="retry">Load</button>
+        </div>
+
         <ul>
           <li
             v-for="quote in data.quotes"
             :key="quote.id"
             class="wrapper-quotes"
           >
-            <div class="quotes-author">{{ quote.author }}</div>
+            <div class="quotes-author">
+              {{ quote.author }}
+              <button class="quotes-btn" @click="deleteQuote(quote.id)">
+                X
+              </button>
+            </div>
             <div class="quotes-quote">{{ quote.quote }}</div>
           </li>
         </ul>
@@ -195,13 +213,17 @@ header {
   color: hsla(160, 75%, 27%, 1);
 }
 
+.load-btn {
+  margin-top: 1rem;
+}
+
 .wrapper-quotes {
   background-color: rgb(31, 31, 31);
   text-align: center;
   list-style-type: none;
   color: whitesmoke;
   margin: 1.4rem 6rem 0 6rem;
-  padding: 0.5rem;
+  padding: 1rem 2rem;
   box-shadow: 0px 0px 0.5rem rgb(35, 35, 35);
   border-radius: 0.2rem;
   border-left: seagreen 0.2rem solid;
@@ -211,12 +233,30 @@ header {
   font-weight: 500;
   text-transform: capitalize;
   font-size: 1rem;
-  color: #1a73e8;
+  color: #f1a5a9;
 }
 
 .quotes-quote {
   color: #96b5d3;
   font-size: 0.9rem;
+}
+
+.quotes-btn {
+  font-weight: bold;
+  padding: 0.2rem 0.8rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 0.2rem;
+  background-color: rgb(31, 31, 31);
+  color: rgb(220, 44, 44);
+}
+
+.quotes-btn:hover {
+  transition: 0.1s ease-in-out;
+  background-color: rgb(35, 35, 35);
+  box-shadow: 0px 0px 0.2rem rgb(45, 45, 45);
+  cursor: pointer;
+  color: rgb(224, 13, 13);
 }
 
 .quotes-loading {
