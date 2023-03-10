@@ -1,3 +1,36 @@
+<script lang="ts" setup>
+import { toRefs } from 'vue'
+
+const props = defineProps({
+  numberOfPages: {
+    required: true,
+    type: Number,
+  },
+  modelValue: {
+    required: true,
+    type: Number,
+  },
+})
+
+const { numberOfPages, modelValue: currentPage } = toRefs(props)
+
+const emit = defineEmits(['update:modelValue'])
+
+const setCurrentPage = (number: Number) => {
+  emit('update:modelValue', number)
+}
+
+const previous = () => {
+  if (currentPage.value === 1) return
+  emit('update:modelValue', currentPage.value - 1)
+}
+
+const next = () => {
+  if (currentPage.value >= numberOfPages.value) return
+  emit('update:modelValue', currentPage.value + 1)
+}
+</script>
+
 <template>
   <div class="pagination-container">
     <ul v-if="numberOfPages >= 1" class="pagination">
@@ -41,39 +74,6 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { toRefs } from 'vue'
-
-const props = defineProps({
-  numberOfPages: {
-    required: true,
-    type: Number,
-  },
-  modelValue: {
-    required: true,
-    type: Number,
-  },
-})
-
-const { numberOfPages, modelValue: currentPage } = toRefs(props)
-
-const emit = defineEmits(['update:modelValue'])
-
-const setCurrentPage = (number: Number) => {
-  emit('update:modelValue', number)
-}
-
-const previous = () => {
-  if (currentPage.value === 1) return
-  emit('update:modelValue', currentPage.value - 1)
-}
-
-const next = () => {
-  if (currentPage.value >= numberOfPages.value) return
-  emit('update:modelValue', currentPage.value + 1)
-}
-</script>
-
 <style scoped>
 .pagination-container {
   display: inline-block;
@@ -81,7 +81,7 @@ const next = () => {
 
 .pagination {
   background-color: rgb(35, 35, 35, 0.8);
-  margin-top: 1rem;
+  margin-top: 1.4rem;
   padding: 0.5rem;
   display: flex;
   gap: 0.4rem;

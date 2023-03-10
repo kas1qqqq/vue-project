@@ -1,71 +1,155 @@
 <script lang="ts" setup>
-import { ref, computed, Transition } from 'vue'
+import { ref, computed, Transition, onMounted, watch } from 'vue'
 import type { ComputedRef } from 'vue'
+
 import { useQuoteApi } from '../assets/useQuoteApi.js'
 import BarChart from './BarChart.vue'
 import PaginationList from './PaginationList.vue'
 
-interface QuotesDataType {
+interface QuotesType {
   id: number
   quote: string
   author: string
 }
 
-const baseUrl: string = 'https://dummyjson.com/quotes?limit=3'
+const loadRandomQtyQoutes = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+const baseUrl = `https://dummyjson.com/quotes?limit=${loadRandomQtyQoutes(
+  3,
+  6
+)}`
 
 const url: ComputedRef<string> = computed(() => baseUrl)
 const { data, error, retry } = useQuoteApi(url)
+
+const isPaginationComponentMount = ref<boolean>(false)
+const isChartComponentMount = ref<boolean>(false)
+const isQuoteComponentMount = ref<boolean>(false)
+const isAllComponentMount = ref<boolean>(false)
 const isSortAz = ref<boolean>(false)
 const isSortZa = ref<boolean>(false)
+const percentage = ref<number>(100)
 
 const sortByAz = () => {
-  data.value.quotes.sort(
-    (quote_a: { author: string }, quote_b: { author: string }) =>
-      quote_a.author > quote_b.author ? 1 : -1
+  data.value.quotes.sort((quote_a: QuotesType, quote_b: QuotesType) =>
+    quote_a.author > quote_b.author ? 1 : -1
   )
 
   if (isSortZa.value) isSortZa.value = !isSortZa.value
-  if (!isSortZa.value) isSortAz.value = !isSortAz.value
+  if (!isSortZa.value) isSortAz.value = !isSortZa.value
 }
 
 const sortByZa = () => {
-  data.value.quotes.sort(
-    (quote_a: { author: string }, quote_b: { author: string }) =>
-      quote_a.author < quote_b.author ? 1 : -1
+  data.value.quotes.sort((quote_a: QuotesType, quote_b: QuotesType) =>
+    quote_a.author < quote_b.author ? 1 : -1
   )
 
   if (isSortAz.value) isSortAz.value = !isSortAz.value
   if (!isSortAz.value) isSortZa.value = !isSortZa.value
 }
 
+const setActiveDeleteQuoteTitleLine = ref<number | null>(null)
+const delay = ref<boolean>(false)
+
 const deleteQuote = (idx: number) => {
-  data.value.quotes = data.value.quotes.filter(
-    (el: QuotesDataType) => el.id !== idx
-  )
+  setActiveDeleteQuoteTitleLine.value = idx
+  delay.value = true
+
+  setTimeout(() => {
+    data.value.quotes = data.value.quotes.filter(
+      (el: QuotesType) => el.id !== idx
+    )
+    delay.value = false
+  }, 500)
 }
+
+const getQuotesLength: ComputedRef<number> = computed(
+  () => data.value?.quotes.length
+)
+
+watch(
+  () => getQuotesLength.value,
+  () => {
+    if (getQuotesLength.value === 0) {
+      isSortAz.value = false
+      isSortZa.value = false
+      setActiveDeleteQuoteTitleLine.value = null
+    }
+  }
+)
+
+onMounted(() => {
+  const percentageTimer = setInterval(() => {
+    percentage.value--
+    if (percentage.value === 0) clearInterval(percentageTimer)
+  }, 63)
+
+  setTimeout(() => {
+    isPaginationComponentMount.value = true
+  }, 2000)
+
+  setTimeout(() => {
+    isChartComponentMount.value = true
+  }, 4000)
+
+  setTimeout(() => {
+    isQuoteComponentMount.value = true
+  }, 6000)
+
+  setTimeout(() => {
+    isAllComponentMount.value = true
+  }, 6500)
+})
 </script>
 
 <template>
   <Transition name="fade">
     <header>
-      <div class="notif">
-        <p>If you see errors, please calm down, it's artificial.</p>
+      <Transition name="fade">
+        <div v-if="isAllComponentMount" class="notif">
+          <p>If you see errors, calm down, it's artificial.</p>
+        </div>
+      </Transition>
+
+      <Transition name="slide-fade">
+        <div v-if="!isAllComponentMount" class="z-index-up all-component-mount">
+          <h3>Components are on the way</h3>
+          <h3>{{ percentage }}%</h3>
+          <img src="../assets/images/Skateboarding.gif" alt="skateboy" />
+        </div>
+      </Transition>
+
+      <Transition name="slide-fade">
+        <div v-if="isPaginationComponentMount">
+          <PaginationList />
+        </div>
+      </Transition>
+
+      <Transition name="slide-fade">
+        <div v-if="isChartComponentMount">
+          <BarChart />
+        </div>
+      </Transition>
+
+      <div v-if="error">
+        <div
+          v-if="isPaginationComponentMount && isChartComponentMount"
+          class="wrapper-error"
+        >
+          <p :style="{ marginBottom: '0.5rem' }">{{ error.message }}</p>
+          <button class="btn" @click="retry">Retry</button>
+        </div>
       </div>
 
-      <PaginationList />
-      <BarChart />
-
-      <div v-if="error" class="wrapper-error">
-        <p>{{ error.message }}</p>
-        <button class="btn" @click="retry">Retry</button>
-      </div>
-
-      <div v-else-if="data">
+      <div v-else-if="isQuoteComponentMount && data">
         <div v-if="data && data.quotes.length !== 0" class="wrapper-btn">
           <button
             :class="isSortAz ? 'btn-sort-clicked' : ''"
             class="btn"
             @click="sortByAz"
+            :disabled="isSortAz"
           >
             Sort A-z
           </button>
@@ -74,33 +158,69 @@ const deleteQuote = (idx: number) => {
             :class="isSortZa ? 'btn-sort-clicked' : ''"
             class="btn"
             @click="sortByZa"
+            :disabled="isSortZa"
           >
             Sort Z-a
           </button>
         </div>
 
-        <div v-if="data.quotes.length === 0">
-          <button class="btn load-btn" @click="retry">Load</button>
-        </div>
+        <Transition name="slide-fade">
+          <div v-if="data.quotes.length === 0">
+            <p :style="{ marginTop: '1rem' }">Load quotes again?</p>
+            <button class="btn load-btn" @click="retry">Load</button>
+          </div>
+        </Transition>
 
-        <ul>
-          <li
-            v-for="quote in data.quotes"
-            :key="quote.id"
-            class="wrapper-quotes"
-          >
-            <div class="quotes-author">
+        <ul
+          v-for="quote in data.quotes"
+          :key="quote.id"
+          :class="
+            quote.id === setActiveDeleteQuoteTitleLine
+              ? 'deleteEffect deleteEffectColorOut'
+              : ''
+          "
+          class="wrapper-quotes"
+        >
+          <li>
+            <div
+              class="quotes-author"
+              :style="{
+                textDecoration:
+                  quote.id === setActiveDeleteQuoteTitleLine
+                    ? 'line-through'
+                    : 'none',
+              }"
+            >
               {{ quote.author }}
-              <button class="quotes-btn" @click="deleteQuote(quote.id)">
+              <button
+                class="quotes-btn"
+                @click="deleteQuote(quote.id)"
+                :disabled="delay"
+              >
                 X
               </button>
             </div>
-            <div class="quotes-quote">{{ quote.quote }}</div>
+
+            <div class="quotes-quote">
+              {{ quote.quote }}
+            </div>
           </li>
         </ul>
       </div>
 
-      <h1 v-else class="quotes-loading">Loading quotes...</h1>
+      <div v-else>
+        <h1
+          :style="{
+            display:
+              isPaginationComponentMount && isChartComponentMount
+                ? 'block'
+                : 'none',
+          }"
+          class="quotes-loading"
+        >
+          Loading quotes...
+        </h1>
+      </div>
     </header>
   </Transition>
 </template>
@@ -112,9 +232,23 @@ const deleteQuote = (idx: number) => {
   box-sizing: border-box;
 }
 
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20%);
+  opacity: 0;
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.3s ease-out;
 }
 
 .fade-enter-from,
@@ -128,9 +262,38 @@ header {
   flex-direction: column;
 }
 
+.all-component-mount {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem;
+  border-radius: 1rem;
+  background-color: #252525;
+  z-index: 99999 !important;
+  animation-name: all-component-mount;
+  animation-duration: 6.6s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+}
+
+@keyframes all-component-mount {
+  0% {
+    background-color: #333;
+    box-shadow: 0 0 2.5rem #252525;
+  }
+  90% {
+    box-shadow: 0 0 2.5rem #252525;
+  }
+  100% {
+    background-color: #181818;
+    box-shadow: 0 0 0rem #181818;
+  }
+}
+
 .notif {
   margin-top: -1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   font-size: 0.9rem;
   color: rgba(250, 250, 210, 0.3);
   user-select: none;
@@ -160,33 +323,57 @@ header {
   }
 }
 
+.deleteEffect {
+  opacity: 1;
+  animation-name: deleteEffect;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-out;
+}
+
+@keyframes deleteEffect {
+  from {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+    filter: contrast(50%);
+  }
+}
+
+.deleteEffectColorOut {
+  border-left: #252525 0.2rem solid !important;
+}
+
 .wrapper-error {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
   margin-top: 1rem;
 }
 
 .wrapper-error p {
   color: #f1777d;
   text-align: center;
-  margin: 0 2rem;
+  margin: 0 4rem;
 }
 
 .wrapper-error button {
-  margin: 0 4.83rem;
+  width: 10rem;
 }
 
 .wrapper-btn {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-top: 1rem;
 }
 
 .btn {
+  font-size: 0.9rem;
   padding: 0.5rem 2rem;
-  margin: 0 1rem;
   border: none;
   border-radius: 0.2rem;
   background-color: rgb(31, 31, 31);
@@ -194,14 +381,14 @@ header {
   color: hsla(160, 75%, 37%, 1);
 }
 
-.btn:hover {
+.btn:not(:disabled):hover {
   transition: 0.1s ease-in-out;
   background-color: rgb(35, 35, 35);
   box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
   cursor: pointer;
 }
 
-.btn:active {
+.btn:not(:disabled):active {
   box-shadow: 0px 0px 0.3rem rgb(35, 35, 35);
   background-color: rgb(35, 35, 35);
   color: rgba(46, 139, 86, 0.79);
@@ -214,7 +401,7 @@ header {
 }
 
 .load-btn {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .wrapper-quotes {
@@ -234,6 +421,7 @@ header {
   text-transform: capitalize;
   font-size: 1rem;
   color: #f1a5a9;
+  margin-left: 2rem;
 }
 
 .quotes-quote {
@@ -244,7 +432,8 @@ header {
 .quotes-btn {
   font-weight: bold;
   padding: 0.2rem 0.8rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  margin-left: 0.2rem;
   border: none;
   border-radius: 0.2rem;
   background-color: rgb(31, 31, 31);
@@ -263,16 +452,41 @@ header {
   color: whitesmoke;
   font-size: 1.2rem;
   margin-top: 0.5rem;
+  animation-name: quotes-loading;
+  animation-duration: 0.5s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes quotes-loading {
+  0% {
+    opacity: 0.6;
+  }
+  25% {
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+  50% {
+    opacity: 0.6;
+  }
+  75% {
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 @media (max-width: 640px) {
   .wrapper-quotes {
-    margin: 1.4rem 1rem 0 1rem;
+    margin: 1.4rem 0rem 0 0rem;
+    padding: 0.5rem 1rem;
   }
 }
 @media (min-width: 1024px) {
   .wrapper-quotes {
-    margin: 1.4rem 12rem 0 12rem;
+    margin: 1.4rem 16rem 0 16rem;
   }
 }
 </style>

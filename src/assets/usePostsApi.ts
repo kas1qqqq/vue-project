@@ -31,11 +31,14 @@ export function usePostsApi(
     try {
       // artificial delay and random error
       await timeout()
+
       const res = await axios.get(URL)
       posts.value = res.data.slice(0, 15)
     } catch (e: any) {
       isError.value = true
-      console.error('There was an artificial error in PostApi. Please try again.')
+      console.error(
+        'There was an artificial error in PostApi. Please try again.'
+      )
     }
   }
 
@@ -65,9 +68,7 @@ function timeout() {
       if (Math.random() > 0.3) {
         resolve()
       } else {
-        reject(
-          new Error('Oops! Error encountered. Cannot load the pagination list.')
-        )
+        reject(new Error('Oops! Error encountered. Cannot load posts.'))
       }
     }, 300)
   })

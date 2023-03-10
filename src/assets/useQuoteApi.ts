@@ -15,7 +15,7 @@ export function useQuoteApi(url: ComputedRef<string>) {
     const urlValue = unref(url)
 
     try {
-      // artificial delay / random error
+      // artificial delay and random error
       await timeout()
       // unref() will return the ref value if it's a ref
       // otherwise the value will be returned as-is
@@ -23,7 +23,9 @@ export function useQuoteApi(url: ComputedRef<string>) {
       data.value = await res.json()
     } catch (e: any) {
       error.value = e
-      console.error('There was an artificial error in QuoteApi. Please try again.')
+      console.error(
+        'There was an artificial error in QuoteApi. Please try again.'
+      )
     }
   }
 
@@ -45,9 +47,7 @@ function timeout() {
       if (Math.random() > 0.3) {
         resolve()
       } else {
-        reject(
-          new Error('Oops! Error encountered. Cannot load the citate list.')
-        )
+        reject(new Error('Oops! Error encountered. Cannot load quotes.'))
       }
     }, 300)
   })

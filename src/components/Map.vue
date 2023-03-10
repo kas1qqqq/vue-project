@@ -14,7 +14,6 @@ import { onMounted } from 'vue'
 
 export default {
   name: 'MapView',
-  component: {},
   setup() {
     let map
     let marker
@@ -144,5 +143,11 @@ export default {
 
 .coord {
   font-weight: bold;
+}
+
+@media (max-width: 640px) {
+  #map {
+    width: 100%;
+  }
 }
 </style>

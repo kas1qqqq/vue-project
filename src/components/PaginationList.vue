@@ -1,8 +1,15 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import VueElementLoading from 'vue-element-loading'
+
 import PaginationComponent from './PaginationComponent.vue'
 import { usePostsApi } from '../assets/usePostsApi'
+
+interface Post {
+  id: number
+  title: string
+  body: string
+}
 
 const currentPage = ref<number>(1)
 const rowsPerPage = ref<number>(3)
@@ -19,17 +26,18 @@ const {
 
 onMounted(async () => loadPosts())
 
-function sortByAz(): void {
+const sortByAz = () => {
   isSortAz.value = !isSortAz.value
+
   if (isSortAz.value) {
-    posts.value.sort((post_a: { title: string }, post_b: { title: string }) =>
+    posts.value.sort((post_a: Post, post_b: Post) =>
       post_a.title > post_b.title ? 1 : -1
     )
   }
 
   if (!isSortAz.value) {
     posts.value.map((post) => post.id > 1)
-    posts.value.sort((post_a: { id: number }, post_b: { id: number }) =>
+    posts.value.sort((post_a: Post, post_b: Post) =>
       post_a.id > post_b.id ? 1 : -1
     )
   }
@@ -37,39 +45,35 @@ function sortByAz(): void {
 </script>
 
 <template>
-  <Transition name="slide-fade">
-    <div v-if="!isError" class="wrapper">
-      <div v-if="posts.length && !isError" class="wrapper-btn">
-        <button
-          class="btn-sort"
-          :class="isSortAz ? 'btn-sort-clicked' : ''"
-          @click="sortByAz"
-        >
-          Sort A-z
-        </button>
-      </div>
-
-      <ul>
-        <li v-for="post in posts" :key="post.id" class="wrapper-posts">
-          <div class="posts-title">{{ post.title }}</div>
-          <div class="posts-body">{{ post.body }}</div>
-        </li>
-      </ul>
-
-      <pagination-component
-        class="pagination-component"
-        v-model="currentPage"
-        :numberOfPages="numberOfPages"
-      />
+  <div v-if="!isError" class="wrapper">
+    <div v-if="posts.length && !isError" class="wrapper-btn">
+      <button
+        class="btn-sort"
+        :class="isSortAz ? 'btn-sort-clicked' : ''"
+        @click="sortByAz"
+      >
+        Sort A-z
+      </button>
     </div>
-  </Transition>
+
+    <ul v-for="post in posts" :key="post.id" class="wrapper-posts">
+      <li>
+        <div class="posts-title">{{ post.title }}</div>
+        <div class="posts-body">{{ post.body }}</div>
+      </li>
+    </ul>
+
+    <pagination-component
+      class="pagination-component"
+      v-model="currentPage"
+      :numberOfPages="numberOfPages"
+    />
+  </div>
 
   <div v-if="posts.length && !isError" class="h-line"></div>
 
   <div v-if="isError" class="wrapper-error">
-    <p id="z-index-up">
-      Oops! Error encountered. Cannot load the pagination list.
-    </p>
+    <p id="z-index-up">Oops! Error encountered. Cannot load posts.</p>
 
     <div class="wrapper-skateboarding">
       <vue-element-loading
@@ -101,29 +105,6 @@ function sortByAz(): void {
   box-sizing: border-box;
 }
 
-.slide-fade-enter-active {
-  transition: all 0.5s ease-out;
-}
-
-.slide-fade-leave-active {
-  transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-  transform: translateX(20px);
-  opacity: 0;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 .unselect {
   user-select: none;
   cursor: default !important;
@@ -139,14 +120,14 @@ function sortByAz(): void {
 
 .h-line {
   width: 100%;
-  height: 0.3rem;
+  height: 0.5rem;
   border-radius: 0.2rem;
   background: rgb(31, 31, 31);
   background: linear-gradient(
     90deg,
-    rgba(31, 31, 31, 0.8) 0%,
-    rgba(52, 73, 94, 0.6) 50%,
-    rgba(31, 31, 31, 0.8) 100%
+    rgba(31, 31, 31, 0) 0%,
+    rgba(52, 73, 94, 0.8) 50%,
+    rgba(31, 31, 31, 0) 100%
   );
   margin-top: 1rem;
   opacity: 0.2;
@@ -178,6 +159,7 @@ function sortByAz(): void {
 }
 
 .btn {
+  font-size: 0.9rem;
   padding: 0.5rem 2rem;
   margin: 0 1rem;
   border: none;
@@ -191,6 +173,7 @@ function sortByAz(): void {
 
 .btn-sort {
   padding: 0.5rem 2rem;
+  font-size: 0.9rem;
   margin: 0 1rem;
   border: none;
   border-radius: 0.2rem;
@@ -201,7 +184,8 @@ function sortByAz(): void {
 
 .btn-run {
   padding: 0.5rem 2rem;
-  margin: 0 1rem;
+  margin: 0 2rem;
+  font-size: 0.9rem;
   border: none;
   border-radius: 0.2rem;
   border-bottom-left-radius: 1.5rem;
@@ -232,7 +216,7 @@ function sortByAz(): void {
   }
   100% {
     opacity: 0.6;
-    margin: 0 1rem;
+    margin: 0 0rem;
   }
 }
 
@@ -270,13 +254,12 @@ function sortByAz(): void {
 .wrapper-skateboarding {
   display: flex;
   flex-direction: column;
-  margin: 0 2rem;
 }
 
 .skateboarding {
   width: 1.5rem;
   height: 1.5rem;
-  left: -8.6rem;
+  left: -9rem;
   top: 0.2rem;
   transform: rotate(45deg);
 }
@@ -284,7 +267,7 @@ function sortByAz(): void {
 .skateboarding-run {
   width: 1.5rem;
   height: 1.5rem;
-  left: -8.6rem;
+  left: -9rem;
   top: 0.47rem;
   animation-name: skateboarding;
   animation-duration: 3s;
@@ -296,7 +279,7 @@ function sortByAz(): void {
   0% {
     transform: rotate(45deg);
     top: 0.2rem;
-    left: -8.6rem;
+    left: -9rem;
   }
   10% {
     top: 0.42rem;
@@ -312,11 +295,17 @@ function sortByAz(): void {
   100% {
     transform: rotate(-45deg);
     top: 0.2rem;
-    left: 8.6rem;
+    left: 9rem;
   }
 }
 
 .wrapper-posts {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 1.4rem 6rem 0 6rem;
+  padding: 1rem 2rem;
+  overflow: hidden;
   background-color: rgb(31, 31, 31);
   box-shadow: 0px 0px 0.5rem rgb(35, 35, 35);
   border-radius: 0.2rem;
@@ -324,17 +313,13 @@ function sortByAz(): void {
   text-align: center;
   list-style-type: none;
   color: whitesmoke;
-  margin: 1.4rem 6rem 0 6rem;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 2rem;
 }
 
 .posts-title {
   font-weight: 500;
   text-transform: capitalize;
   font-size: 1rem;
-  color: #f3ab26;
+  color: #fbe69e;
 }
 
 .posts-body {
@@ -348,14 +333,26 @@ function sortByAz(): void {
   margin-top: 0.5rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 400px) {
   .wrapper-posts {
-    margin: 1.4rem 1rem 0 1rem;
+    height: 35vh;
+  }
+
+  .wrapper-error p {
+    padding: 0 3rem;
   }
 }
+
+@media (max-width: 640px) {
+  .wrapper-posts {
+    margin: 1.4rem 0rem 0 0rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
 @media (min-width: 1024px) {
   .wrapper-posts {
-    margin: 1.4rem 12rem 0 12rem;
+    margin: 1.4rem 16rem 0 16rem;
   }
 }
 </style>
