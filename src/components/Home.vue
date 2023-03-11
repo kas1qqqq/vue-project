@@ -166,7 +166,9 @@ onMounted(() => {
 
         <Transition name="slide-fade">
           <div v-if="data.quotes.length === 0">
-            <p :style="{ marginTop: '1rem' }">Load quotes again?</p>
+            <p :style="{ marginTop: '1rem', color: '#e3e3e3' }">
+              Load quotes again?
+            </p>
             <button class="btn load-btn" @click="retry">Load</button>
           </div>
         </Transition>
@@ -270,6 +272,7 @@ header {
   padding: 1rem;
   border-radius: 1rem;
   background-color: #252525;
+  color: #e3e3e3;
   z-index: 99999 !important;
   animation-name: all-component-mount;
   animation-duration: 6.6s;
