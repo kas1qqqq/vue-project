@@ -1,107 +1,107 @@
 <script lang="ts" setup>
-import { ref, computed, Transition, onMounted, watch } from 'vue'
-import type { ComputedRef } from 'vue'
+import { ref, computed, Transition, onMounted, watch } from "vue";
+import type { ComputedRef } from "vue";
 
-import { useQuoteApi } from '../assets/useQuoteApi.js'
-import BarChart from './BarChart.vue'
-import PaginationList from './PaginationList.vue'
+import { useQuoteApi } from "../assets/useQuoteApi.js";
+import BarChart from "./BarChart.vue";
+import PaginationList from "./PaginationList.vue";
 
 interface QuotesType {
-  id: number
-  quote: string
-  author: string
+  id: number;
+  quote: string;
+  author: string;
 }
 
-const loadRandomQtyQoutes = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
+const loadRandomQtyQuotes = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
-const baseUrl = `https://dummyjson.com/quotes?limit=${loadRandomQtyQoutes(
+const baseUrl = `https://dummyjson.com/quotes?limit=${loadRandomQtyQuotes(
   3,
   6
-)}`
+)}`;
 
-const url: ComputedRef<string> = computed(() => baseUrl)
-const { data, error, retry } = useQuoteApi(url)
+const url: ComputedRef<string> = computed(() => baseUrl);
+const { data, error, retry } = useQuoteApi(url);
 
-const isPaginationComponentMount = ref<boolean>(false)
-const isChartComponentMount = ref<boolean>(false)
-const isQuoteComponentMount = ref<boolean>(false)
-const isAllComponentMount = ref<boolean>(false)
-const isSortAz = ref<boolean>(false)
-const isSortZa = ref<boolean>(false)
-const percentage = ref<number>(100)
+const isPaginationComponentMount = ref<boolean>(false);
+const isChartComponentMount = ref<boolean>(false);
+const isQuoteComponentMount = ref<boolean>(false);
+const isAllComponentMount = ref<boolean>(false);
+const isSortAz = ref<boolean>(false);
+const isSortZa = ref<boolean>(false);
+const percentage = ref<number>(100);
 
 const sortByAz = () => {
   data.value.quotes.sort((quote_a: QuotesType, quote_b: QuotesType) =>
     quote_a.author > quote_b.author ? 1 : -1
-  )
+  );
 
-  if (isSortZa.value) isSortZa.value = !isSortZa.value
-  if (!isSortZa.value) isSortAz.value = !isSortZa.value
-}
+  if (isSortZa.value) isSortZa.value = !isSortZa.value;
+  if (!isSortZa.value) isSortAz.value = !isSortZa.value;
+};
 
 const sortByZa = () => {
   data.value.quotes.sort((quote_a: QuotesType, quote_b: QuotesType) =>
     quote_a.author < quote_b.author ? 1 : -1
-  )
+  );
 
-  if (isSortAz.value) isSortAz.value = !isSortAz.value
-  if (!isSortAz.value) isSortZa.value = !isSortZa.value
-}
+  if (isSortAz.value) isSortAz.value = !isSortAz.value;
+  if (!isSortAz.value) isSortZa.value = !isSortZa.value;
+};
 
-const setActiveDeleteQuoteTitleLine = ref<number | null>(null)
-const delay = ref<boolean>(false)
+const setActiveDeleteQuoteTitleLine = ref<number | null>(null);
+const delay = ref<boolean>(false);
 
 const deleteQuote = (idx: number) => {
-  setActiveDeleteQuoteTitleLine.value = idx
-  delay.value = true
+  setActiveDeleteQuoteTitleLine.value = idx;
+  delay.value = true;
 
   setTimeout(() => {
     data.value.quotes = data.value.quotes.filter(
       (el: QuotesType) => el.id !== idx
-    )
-    delay.value = false
-  }, 500)
-}
+    );
+    delay.value = false;
+  }, 500);
+};
 
 const getQuotesLength: ComputedRef<number> = computed(
   () => data.value?.quotes.length
-)
+);
 
 watch(
   () => getQuotesLength.value,
   () => {
     if (getQuotesLength.value === 0) {
-      isSortAz.value = false
-      isSortZa.value = false
-      setActiveDeleteQuoteTitleLine.value = null
+      isSortAz.value = false;
+      isSortZa.value = false;
+      setActiveDeleteQuoteTitleLine.value = null;
     }
   }
-)
+);
 
 onMounted(() => {
   const percentageTimer = setInterval(() => {
-    percentage.value--
-    if (percentage.value === 0) clearInterval(percentageTimer)
-  }, 63)
+    percentage.value--;
+    if (percentage.value === 0) clearInterval(percentageTimer);
+  }, 63);
 
   setTimeout(() => {
-    isPaginationComponentMount.value = true
-  }, 2000)
+    isPaginationComponentMount.value = true;
+  }, 2000);
 
   setTimeout(() => {
-    isChartComponentMount.value = true
-  }, 4000)
+    isChartComponentMount.value = true;
+  }, 4000);
 
   setTimeout(() => {
-    isQuoteComponentMount.value = true
-  }, 6000)
+    isQuoteComponentMount.value = true;
+  }, 6000);
 
   setTimeout(() => {
-    isAllComponentMount.value = true
-  }, 6500)
-})
+    isAllComponentMount.value = true;
+  }, 6500);
+});
 </script>
 
 <template>
@@ -487,6 +487,7 @@ header {
     padding: 0.5rem 1rem;
   }
 }
+
 @media (min-width: 1024px) {
   .wrapper-quotes {
     margin: 1.4rem 16rem 0 16rem;
