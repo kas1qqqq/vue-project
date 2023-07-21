@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { RouterLink, RouterView } from 'vue-router'
-import Greeting from './components/Greeting.vue'
+import { RouterLink, RouterView } from "vue-router";
+
+import Greeting from "./components/Greeting.vue";
 </script>
 
 <template>
@@ -31,6 +32,7 @@ header {
   line-height: 1.5;
   max-height: 100vh;
 }
+
 .wrapper {
   display: flex;
   justify-content: center;
@@ -55,6 +57,10 @@ nav a.router-link-exact-active {
 
 nav a.router-link-exact-active:hover {
   background-color: transparent;
+}
+
+nav a.router-link-inactive {
+  background-color: red;
 }
 
 nav a {

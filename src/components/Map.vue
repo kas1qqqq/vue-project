@@ -1,40 +1,30 @@
-<template>
-  <main>
-    <div class="notif">
-      <p>If you leave one point, the local storage will be cleared.</p>
-    </div>
-
-    <div id="map"></div>
-  </main>
-</template>
-
 <script>
-import leaflet from 'leaflet'
-import { onMounted } from 'vue'
+import { onMounted } from "vue";
+import leaflet from "leaflet";
 
 export default {
-  name: 'MapView',
+  name: "MapView",
   setup() {
-    let map
-    let marker
-    let coordinatesX
-    let coordinatesY
-    let arrOfCoords = []
-    let getArrOfCoords
-    let previousMarkers
+    let map;
+    let marker;
+    let coordinatesX;
+    let coordinatesY;
+    let arrOfCoords = [];
+    let getArrOfCoords;
+    let previousMarkers;
 
     onMounted(() => {
-      map = leaflet.map('map').setView([49, 32], 5)
+      map = leaflet.map("map").setView([49, 32], 5);
 
       leaflet
-        .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        .tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
           attribution:
             '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         })
-        .addTo(map)
+        .addTo(map);
 
-      getArrOfCoords = JSON.parse(localStorage.getItem('Coordinates'))
+      getArrOfCoords = JSON.parse(localStorage.getItem("Coordinates"));
 
       if (getArrOfCoords) {
         for (let n in getArrOfCoords) {
@@ -50,34 +40,44 @@ export default {
                 n
               ].at(-1)}</span></div>`
             )
-            .addTo(map)
-          previousMarkers._icon.classList.add('previous-marker-hue')
+            .addTo(map);
+          previousMarkers._icon.classList.add("previous-marker-hue");
         }
 
         if (getArrOfCoords.length === 1) {
-          localStorage.clear()
+          localStorage.clear();
         }
       }
 
       function onMapClick(e) {
-        coordinatesX = [e.latlng.lat.toFixed(3)]
-        coordinatesY = [e.latlng.lng.toFixed(3)]
-        marker = L.marker(e.latlng).addTo(map)
+        coordinatesX = [e.latlng.lat.toFixed(3)];
+        coordinatesY = [e.latlng.lng.toFixed(3)];
+        marker = L.marker(e.latlng).addTo(map);
 
         marker
           .bindPopup(
             `<div class="wrapper-coord"><span class="marker-title">My new marker</span><span>Latitude: <span class="coord">${coordinatesX}</span></span><span>Longitude: <span class="coord">${coordinatesY}</span></div>`
           )
-          .openPopup()
+          .openPopup();
 
-        arrOfCoords.push([...coordinatesX, ...coordinatesY])
-        localStorage.setItem('Coordinates', JSON.stringify(arrOfCoords))
+        arrOfCoords.push([...coordinatesX, ...coordinatesY]);
+        localStorage.setItem("Coordinates", JSON.stringify(arrOfCoords));
       }
-      map.on('click', onMapClick)
-    })
+      map.on("click", onMapClick);
+    });
   },
-}
+};
 </script>
+
+<template>
+  <main>
+    <div class="notif">
+      <p>If you leave one point, the local storage will be cleared.</p>
+    </div>
+
+    <div id="map"></div>
+  </main>
+</template>
 
 <style>
 .notif {

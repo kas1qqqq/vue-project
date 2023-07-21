@@ -1,19 +1,19 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import VueElementLoading from 'vue-element-loading'
+import { onMounted, ref } from "vue";
+import VueElementLoading from "vue-element-loading";
 
-import PaginationComponent from './PaginationComponent.vue'
-import { usePostsApi } from '../assets/usePostsApi'
+import PaginationComponent from "./PaginationComponent.vue";
+import { usePostsApi } from "../assets/usePostsApi";
 
 interface Post {
-  id: number
-  title: string
-  body: string
+  id: number;
+  title: string;
+  body: string;
 }
 
-const currentPage = ref<number>(1)
-const rowsPerPage = ref<number>(3)
-const isSortAz = ref<boolean>(false)
+const currentPage = ref<number>(1);
+const rowsPerPage = ref<number>(3);
+const isSortAz = ref<boolean>(false);
 
 const {
   posts,
@@ -22,26 +22,26 @@ const {
   loadPosts,
   retryWithDelay,
   numberOfPages,
-} = usePostsApi(currentPage, rowsPerPage)
+} = usePostsApi(currentPage, rowsPerPage);
 
-onMounted(async () => loadPosts())
+onMounted(async () => loadPosts());
 
 const sortByAz = () => {
-  isSortAz.value = !isSortAz.value
+  isSortAz.value = !isSortAz.value;
 
   if (isSortAz.value) {
     posts.value.sort((post_a: Post, post_b: Post) =>
       post_a.title > post_b.title ? 1 : -1
-    )
+    );
   }
 
   if (!isSortAz.value) {
-    posts.value.map((post) => post.id > 1)
+    posts.value.map((post) => post.id > 1);
     posts.value.sort((post_a: Post, post_b: Post) =>
       post_a.id > post_b.id ? 1 : -1
-    )
+    );
   }
-}
+};
 </script>
 
 <template>
@@ -92,7 +92,7 @@ const sortByAz = () => {
         class="z-index-up"
         @click="retryWithDelay"
       >
-        {{ !isRetryLoadPosts ? 'Retry' : 'Loading...' }}
+        {{ !isRetryLoadPosts ? "Retry" : "Loading..." }}
       </button>
     </div>
   </div>
