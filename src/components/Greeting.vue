@@ -20,6 +20,7 @@ const authStore = useAuthStore();
   >
 
   <p v-if="authStore.username" class="username">
+    <img src="../assets/images/pinia-logo.svg" width="30" height="30" />
     {{ authStore.username }}
   </p>
 
@@ -54,6 +55,8 @@ button {
   position: absolute;
   top: 0;
   right: 0;
+  font-weight: bold;
+  color: #aae9cd;
   display: inline-block;
   padding: 0.5rem 0.5rem;
   margin-right: -0.7rem;
@@ -76,12 +79,14 @@ button {
 .btn:not(:disabled):hover {
   transition: 0.1s ease-in-out;
   background-color: #fff0f0;
-  color: #dc362e;
+  color: #dc362e !important;
   box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
   cursor: pointer;
 }
 
 .username {
+  display: flex;
+  align-items: center;
   font-size: 1rem;
   font-weight: bold;
   position: absolute;

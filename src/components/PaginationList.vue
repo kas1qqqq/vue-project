@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import VueElementLoading from "vue-element-loading";
 
 import PaginationComponent from "./PaginationComponent.vue";
-import { usePostsApi } from "../assets/usePostsApi";
+import { usePostsApi } from "../utils/usePostsApi";
 
 interface Post {
   id: number;
