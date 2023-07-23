@@ -2,6 +2,7 @@
 import { ref, onMounted, Transition, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 
+import Quiz from "./Quiz.vue";
 import { useAuthStore } from "../stores/auth";
 
 // store
@@ -33,14 +34,14 @@ const submitHandler = () => {
 
   if (isUserDataMatch.value) {
     authStore.setUsername(login.value);
-    router.push("/");
+    // router.push("/");
   }
 };
 
 onMounted(() => {
-  if (authStore.username) {
-    router.back();
-  }
+  // if (authStore.username) {
+  //   router.back();
+  // }
 
   setTimeout(() => (isHintVisible.value = !isHintVisible.value), 1000);
 });
@@ -52,7 +53,7 @@ watch(isUserDataMatch, () => {
 </script>
 
 <template>
-  <div>
+  <div v-if="!authStore.username">
     <img
       src="../assets/images/pinia-logo.svg"
       width="40"
@@ -60,7 +61,6 @@ watch(isUserDataMatch, () => {
       alt="pinia store logo"
     />
     <h1>Pinia Auth</h1>
-
     <Transition name="bounce">
       <p v-if="isHintVisible && !isUserDataMatch && loginAttempts < 3">
         Please make {{ 3 - loginAttempts }}
@@ -113,6 +113,9 @@ watch(isUserDataMatch, () => {
         Submit
       </button>
     </form>
+  </div>
+  <div v-else>
+    <Quiz />
   </div>
 </template>
 

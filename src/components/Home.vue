@@ -2,7 +2,7 @@
 import { ref, computed, Transition, onMounted, watch } from "vue";
 import type { ComputedRef } from "vue";
 
-import { useQuoteApi } from "../assets/useQuoteApi.js";
+import { useQuoteApi } from "../utils/useQuoteApi.js";
 import BarChart from "./BarChart.vue";
 import PaginationList from "./PaginationList.vue";
 
@@ -494,3 +494,4 @@ header {
   }
 }
 </style>
+../utils/useQuoteApi.js
