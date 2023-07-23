@@ -8,9 +8,6 @@ import { useAuthStore } from "../stores/auth";
 // store
 const authStore = useAuthStore();
 
-// router
-const router = useRouter();
-
 // refs
 const loginAttempts = ref<number>(0);
 const isHintVisible = ref<boolean>(false);
