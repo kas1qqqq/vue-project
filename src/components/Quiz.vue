@@ -159,6 +159,9 @@ const tryAgainHandler = (): void => {
       </span>
       <button @click="tryAgainHandler" class="btn">Try again</button>
     </div>
+    <p v-else class="questionsRemain">
+      {{ currentQuestion + 1 }}/{{ QUESTIONS.length }}
+    </p>
   </div>
 </template>
 
@@ -295,5 +298,11 @@ li {
   color: #dc362e !important;
   box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
   cursor: pointer;
+}
+
+.questionsRemain {
+  color: #aae9cd;
+  text-align: right;
+  margin-right: 1.4rem;
 }
 </style>

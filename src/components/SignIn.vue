@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, onMounted, Transition, computed, watch } from "vue";
-import { useRouter } from "vue-router";
 
 import Quiz from "./Quiz.vue";
 import { useAuthStore } from "../stores/auth";
@@ -31,15 +30,10 @@ const submitHandler = () => {
 
   if (isUserDataMatch.value) {
     authStore.setUsername(login.value);
-    // router.push("/");
   }
 };
 
 onMounted(() => {
-  // if (authStore.username) {
-  //   router.back();
-  // }
-
   setTimeout(() => (isHintVisible.value = !isHintVisible.value), 1000);
 });
 
