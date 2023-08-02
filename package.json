@@ -1,7 +1,7 @@
 {
-  "name": "vue3-project",
-  "homepage": "https://kas1qqqq.github.io/vue3-project/",
-  "version": "1.0.0",
+  "name": "vue-project",
+  "homepage": "https://kas1qqqq.github.io/vue-project/",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -12,8 +12,10 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@vueuse/sound": "^2.0.1",
     "axios": "^1.2.2",
     "chart.js": "^4.1.2",
+    "firebase": "^10.1.0",
     "leaflet": "^1.9.3",
     "pinia": "^2.1.4",
     "vue": "^3.2.45",
@@ -21,7 +23,8 @@
     "vue-axios": "^3.5.2",
     "vue-chartjs": "^5.2.0",
     "vue-element-loading": "^3.0.1",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "vuefire": "^3.1.12"
   },
   "devDependencies": {
     "@types/node": "^18.11.12",

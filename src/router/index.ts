@@ -1,8 +1,10 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router"
 
-import HomeView from "../views/HomeView.vue";
-import MapView from "../views/MapView.vue";
-import SignIn from "../components/SignIn.vue";
+import HomeView from "@/views/HomeView.vue"
+import MapView from "@/views/MapView.vue"
+import Auth from "@/components/Auth.vue"
+import Quiz from "@/components/Quiz.vue"
+import NotFound from "@/components/NotFound.vue"
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -18,11 +20,21 @@ const router = createRouter({
       component: MapView,
     },
     {
-      path: "/auth/signin",
-      name: "signin",
-      component: SignIn,
+      path: "/auth",
+      name: "auth",
+      component: Auth,
+    },
+    {
+      path: "/quiz",
+      name: "quiz",
+      component: Quiz,
+    },
+    {
+      path: "/:catchAll(.*)",
+      name: "notFound",
+      component: NotFound,
     },
   ],
-});
+})
 
-export default router;
+export default router

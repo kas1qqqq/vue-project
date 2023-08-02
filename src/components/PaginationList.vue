@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch, type Ref } from "vue";
 import VueElementLoading from "vue-element-loading";
 
 import PaginationComponent from "./PaginationComponent.vue";
-import { usePostsApi } from "../utils/usePostsApi";
+import { scrollToHandler } from "@/utils/scrollToHandler";
+import { usePostsApi } from "@/utils/usePostsApi";
 
 interface Post {
   id: number;
@@ -14,6 +15,7 @@ interface Post {
 const currentPage = ref<number>(1);
 const rowsPerPage = ref<number>(3);
 const isSortAz = ref<boolean>(false);
+const postsRef: Ref<HTMLElement | null> = ref(null);
 
 const {
   posts,
@@ -23,8 +25,6 @@ const {
   retryWithDelay,
   numberOfPages,
 } = usePostsApi(currentPage, rowsPerPage);
-
-onMounted(async () => loadPosts());
 
 const sortByAz = () => {
   isSortAz.value = !isSortAz.value;
@@ -42,10 +42,27 @@ const sortByAz = () => {
     );
   }
 };
+
+onMounted(async () => loadPosts());
+
+watch(currentPage, () => {
+  if (isSortAz.value) {
+    isSortAz.value = !isSortAz.value;
+  }
+
+  scrollToHandler(postsRef);
+});
 </script>
 
 <template>
-  <div v-if="!isError" class="wrapper">
+  <div ref="postsRef" v-if="!isError" class="wrapper">
+    <ul v-for="post in posts" :key="post.id" class="wrapper-posts">
+      <li>
+        <div class="posts-title">{{ post.title }}</div>
+        <div class="posts-body">{{ post.body }}</div>
+      </li>
+    </ul>
+
     <div v-if="posts.length && !isError" class="wrapper-btn">
       <button
         class="btn-sort"
@@ -55,13 +72,6 @@ const sortByAz = () => {
         Sort A-z
       </button>
     </div>
-
-    <ul v-for="post in posts" :key="post.id" class="wrapper-posts">
-      <li>
-        <div class="posts-title">{{ post.title }}</div>
-        <div class="posts-body">{{ post.body }}</div>
-      </li>
-    </ul>
 
     <pagination-component
       class="pagination-component"
@@ -156,41 +166,41 @@ const sortByAz = () => {
 .wrapper-btn {
   display: flex;
   justify-content: center;
+  margin-top: 1.4rem;
 }
 
 .btn {
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0.5rem 2rem;
   margin: 0 1rem;
   border: none;
   border-radius: 0.2rem;
   border-bottom-left-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
-  background-color: rgb(35, 35, 35, 0.8);
-  box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
+  background-color: rgb(227, 227, 227, 0.1);
+  box-shadow: 0px 0px 0.2rem rgb(65, 65, 65);
   color: hsla(160, 75%, 37%, 1);
 }
 
 .btn-sort {
   padding: 0.5rem 2rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin: 0 1rem;
   border: none;
   border-radius: 0.2rem;
-  background-color: rgb(35, 35, 35, 0.8);
-  box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
+  background-color: rgb(227, 227, 227, 0.1);
   color: hsla(160, 75%, 37%, 1);
 }
 
 .btn-run {
   padding: 0.5rem 2rem;
   margin: 0 2rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   border: none;
   border-radius: 0.2rem;
   border-bottom-left-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
-  background-color: rgb(35, 35, 35, 0.8);
+  background-color: rgb(227, 227, 227, 0.1);
   box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
   color: hsla(160, 75%, 37%, 1);
   animation-name: btn-run;
@@ -198,7 +208,6 @@ const sortByAz = () => {
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
-
 @keyframes btn-run {
   0% {
     opacity: 0.6;
@@ -222,27 +231,18 @@ const sortByAz = () => {
 
 .btn:hover {
   transition: 0.1s ease-in-out;
-  background-color: rgb(40, 40, 40);
-  box-shadow: 0px 0px 0.3rem rgb(45, 45, 45);
+  background-color: rgb(227, 227, 227, 0.2);
+  box-shadow: 0px 0px 0.3rem rgb(75, 75, 75);
+  color: #aae9cd;
   cursor: pointer;
-}
-
-.btn:active {
-  box-shadow: 0px 0px 0.3rem rgb(45, 45, 45);
-  color: rgba(46, 139, 86, 0.79);
 }
 
 .btn-sort:hover {
   transition: 0.1s ease-in-out;
-  background-color: rgb(40, 40, 40);
-  box-shadow: 0px 0px 0.3rem rgb(45, 45, 45);
+  color: #aae9cd;
+  background-color: rgb(227, 227, 227, 0.2);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
   cursor: pointer;
-}
-
-.btn-sort:active {
-  box-shadow: 0px 0px 0.3rem rgb(35, 35, 35);
-  background-color: rgb(35, 35, 35);
-  color: rgba(46, 139, 86, 0.79);
 }
 
 .btn-sort-clicked {
@@ -274,7 +274,6 @@ const sortByAz = () => {
   animation-iteration-count: 1;
   animation-timing-function: ease-in-out;
 }
-
 @keyframes skateboarding {
   0% {
     transform: rotate(45deg);
@@ -307,12 +306,14 @@ const sortByAz = () => {
   padding: 1rem 2rem;
   overflow: hidden;
   background-color: rgb(31, 31, 31);
-  box-shadow: 0px 0px 0.5rem rgb(35, 35, 35);
   border-radius: 0.2rem;
   border-left: seagreen 0.2rem solid;
   text-align: center;
   list-style-type: none;
-  color: whitesmoke;
+}
+
+.wrapper-posts:hover {
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
 }
 
 .posts-title {

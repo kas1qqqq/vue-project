@@ -1,16 +1,26 @@
 <script lang="ts" setup>
-import { ref, computed, Transition, onMounted, watch } from "vue";
-import type { ComputedRef } from "vue";
+import {
+  ref,
+  computed,
+  Transition,
+  onMounted,
+  watch,
+  type ComputedRef,
+  type Ref,
+} from "vue";
 
-import { useQuoteApi } from "../utils/useQuoteApi.js";
 import BarChart from "./BarChart.vue";
 import PaginationList from "./PaginationList.vue";
+import { useQuoteApi } from "@/utils/useQuoteApi.js";
+import { scrollToHandler } from "@/utils/scrollToHandler";
 
 interface QuotesType {
   id: number;
   quote: string;
   author: string;
 }
+
+const quotesRef: Ref<HTMLElement | null> = ref(null);
 
 const loadRandomQtyQuotes = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -24,6 +34,7 @@ const baseUrl = `https://dummyjson.com/quotes?limit=${loadRandomQtyQuotes(
 const url: ComputedRef<string> = computed(() => baseUrl);
 const { data, error, retry } = useQuoteApi(url);
 
+// refs
 const isPaginationComponentMount = ref<boolean>(false);
 const isChartComponentMount = ref<boolean>(false);
 const isQuoteComponentMount = ref<boolean>(false);
@@ -33,6 +44,8 @@ const isSortZa = ref<boolean>(false);
 const percentage = ref<number>(100);
 
 const sortByAz = () => {
+  scrollToHandler(quotesRef);
+
   data.value.quotes.sort((quote_a: QuotesType, quote_b: QuotesType) =>
     quote_a.author > quote_b.author ? 1 : -1
   );
@@ -42,6 +55,8 @@ const sortByAz = () => {
 };
 
 const sortByZa = () => {
+  scrollToHandler(quotesRef);
+
   data.value.quotes.sort((quote_a: QuotesType, quote_b: QuotesType) =>
     quote_a.author < quote_b.author ? 1 : -1
   );
@@ -65,21 +80,20 @@ const deleteQuote = (idx: number) => {
   }, 500);
 };
 
+// computed
 const getQuotesLength: ComputedRef<number> = computed(
   () => data.value?.quotes.length
 );
 
-watch(
-  () => getQuotesLength.value,
-  () => {
-    if (getQuotesLength.value === 0) {
-      isSortAz.value = false;
-      isSortZa.value = false;
-      setActiveDeleteQuoteTitleLine.value = null;
-    }
+watch(getQuotesLength, () => {
+  if (getQuotesLength.value === 0) {
+    isSortAz.value = false;
+    isSortZa.value = false;
+    setActiveDeleteQuoteTitleLine.value = null;
   }
-);
+});
 
+// lifecycle hook
 onMounted(() => {
   const percentageTimer = setInterval(() => {
     percentage.value--;
@@ -143,7 +157,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div v-else-if="isQuoteComponentMount && data">
+      <div ref="quotesRef" v-else-if="isQuoteComponentMount && data">
         <div v-if="data && data.quotes.length !== 0" class="wrapper-btn">
           <button
             :class="isSortAz ? 'btn-sort-clicked' : ''"
@@ -277,9 +291,8 @@ header {
   animation-name: all-component-mount;
   animation-duration: 6.6s;
   animation-iteration-count: 1;
-  animation-timing-function: ease-out;
+  animation-timing-function: ease-in-out;
 }
-
 @keyframes all-component-mount {
   0% {
     background-color: #333;
@@ -294,6 +307,10 @@ header {
   }
 }
 
+.all-component-mount h3:first-child {
+  color: #96b5d3;
+}
+
 .notif {
   margin-top: -1rem;
   margin-bottom: 1rem;
@@ -305,7 +322,6 @@ header {
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
-
 @keyframes notif {
   0% {
     opacity: 0.6;
@@ -333,7 +349,6 @@ header {
   animation-iteration-count: 1;
   animation-timing-function: ease-out;
 }
-
 @keyframes deleteEffect {
   from {
     opacity: 1;
@@ -375,32 +390,26 @@ header {
 }
 
 .btn {
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0.5rem 2rem;
   border: none;
   border-radius: 0.2rem;
-  background-color: rgb(31, 31, 31);
-  box-shadow: 0px 0px 0.2rem rgb(31, 31, 31);
+  background-color: rgb(227, 227, 227, 0.1);
   color: hsla(160, 75%, 37%, 1);
 }
 
 .btn:not(:disabled):hover {
   transition: 0.1s ease-in-out;
-  background-color: rgb(35, 35, 35);
-  box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
+  color: #aae9cd;
+  background-color: rgb(227, 227, 227, 0.2);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
   cursor: pointer;
-}
-
-.btn:not(:disabled):active {
-  box-shadow: 0px 0px 0.3rem rgb(35, 35, 35);
-  background-color: rgb(35, 35, 35);
-  color: rgba(46, 139, 86, 0.79);
 }
 
 .btn-sort-clicked {
   background-color: rgb(45, 45, 45);
-  box-shadow: 0px 0px 0.2rem rgb(45, 45, 45);
-  color: hsla(160, 75%, 27%, 1);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
+  color: rgb(227, 227, 227, 0.2);
 }
 
 .load-btn {
@@ -417,6 +426,10 @@ header {
   box-shadow: 0px 0px 0.5rem rgb(35, 35, 35);
   border-radius: 0.2rem;
   border-left: seagreen 0.2rem solid;
+}
+
+.wrapper-quotes:hover {
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
 }
 
 .quotes-author {
@@ -446,7 +459,7 @@ header {
 .quotes-btn:hover {
   transition: 0.1s ease-in-out;
   background-color: rgb(35, 35, 35);
-  box-shadow: 0px 0px 0.2rem rgb(45, 45, 45);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
   cursor: pointer;
   color: rgb(224, 13, 13);
 }
@@ -460,7 +473,6 @@ header {
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
-
 @keyframes quotes-loading {
   0% {
     opacity: 0.6;
@@ -494,4 +506,3 @@ header {
   }
 }
 </style>
-../utils/useQuoteApi.js

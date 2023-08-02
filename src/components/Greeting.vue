@@ -1,35 +1,27 @@
 <script lang="ts" setup>
-import { useAuthStore } from "../stores/auth";
-
-defineProps({
-  msg: {
-    type: String,
-    required: true,
-  },
-});
+import { useAuthStore } from "@/stores/auth"
 
 // store
-const authStore = useAuthStore();
+const authStore = useAuthStore()
 </script>
 
 <template>
-  <h1 class="green">{{ msg }}</h1>
-
-  <router-link v-if="!authStore.username" to="/auth/signin" class="signInLink"
-    >Sign In</router-link
-  >
-
   <p v-if="authStore.username" class="username">
-    <img src="../assets/images/pinia-logo.svg" width="30" height="30" />
+    <img
+      src="../assets/images/firebase-logo.svg"
+      width="30"
+      height="30"
+      alt="Firebase logo"
+    />
     {{ authStore.username }}
   </p>
 
   <a
     v-if="authStore.username"
-    @click="authStore.clearUsername()"
-    class="signInLink btn"
+    @click="authStore.clearUsername"
+    class="authLink"
   >
-    Sign Out
+    Exit
   </a>
 </template>
 
@@ -51,32 +43,20 @@ button {
   cursor: pointer;
 }
 
-.signInLink {
+.authLink {
   position: absolute;
   top: 0;
   right: 0;
-  font-weight: bold;
-  color: #aae9cd;
+  color: #41b883;
   display: inline-block;
   padding: 0.5rem 0.5rem;
-  margin-right: -0.7rem;
   border-radius: 0.2rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  cursor: pointer;
 }
 
-.btn {
-  font-size: 0.9rem;
-  padding: 0.5rem 2rem;
-  border: none;
-  border-radius: 0.2rem;
-  background-color: transparent;
-  box-shadow: 0px 0px 0.2rem rgb(31, 31, 31, 0);
-  color: hsla(160, 75%, 37%, 1);
-  transition: 0.3s ease-out;
-}
-
-.btn:not(:disabled):hover {
+.authLink:hover {
   transition: 0.1s ease-in-out;
   background-color: #fff0f0;
   color: #dc362e !important;
@@ -102,7 +82,7 @@ button {
 }
 
 a.router-link-exact-active {
-  color: var(--color-text);
+  color: #a1a1a1;
 }
 
 @media (max-width: 480px) {

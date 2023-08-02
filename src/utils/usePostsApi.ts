@@ -65,7 +65,7 @@ export function usePostsApi(
 function timeout() {
   return new Promise<void>((resolve, reject) => {
     setTimeout(() => {
-      if (Math.random() > 0.3) {
+      if (Math.random() > 0.2) {
         resolve()
       } else {
         reject(new Error('Oops! Error encountered. Cannot load posts.'))

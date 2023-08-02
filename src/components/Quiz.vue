@@ -1,73 +1,38 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { useSound } from "@vueuse/sound";
+import { ref, computed, watch, type Ref } from "vue";
 
-interface QuestionsType {
-  question: string;
-  options: string[];
-  correctAnswer: string;
-}
+import { QUESTIONS } from "@/utils/quizQuestions";
+import { scrollToHandler } from "@/utils/scrollToHandler";
+import popCorrectSound from "@/assets/sounds/pop-correct.mp3";
+import popIncorrectSound from "@/assets/sounds/pop-incorrect.mp3";
+import winSound from "@/assets/sounds/win.wav";
+import loseSound from "@/assets/sounds/lose.wav";
 
 interface QuizResultType {
   isPassed: boolean;
   msg: string;
 }
 
-const QUESTIONS: QuestionsType[] = [
-  {
-    question: "What is the capital of France?",
-    options: ["Berlin", "London", "Paris"],
-    correctAnswer: "Paris",
-  },
-  {
-    question: "What is 2 + 2?",
-    options: ["3", "4", "5"],
-    correctAnswer: "4",
-  },
-  {
-    question: "In Vue 3, what is the new composition API used for?",
-    options: [
-      "Managing server-side routes",
-      "Handling HTTP requests",
-      "Managing state and logic in components",
-    ],
-    correctAnswer: "Managing state and logic in components",
-  },
-  {
-    question: "What is the root component in a Vue 3 application?",
-    options: ["main.js", "App.vue", "index.html"],
-    correctAnswer: "App.vue",
-  },
-  {
-    question:
-      "In Vue 3, how can you create a reactive data property in a component?",
-    options: [
-      "Using the `ref` function from Vue composition API",
-      "Using the `reactive` function from Vue composition API",
-      "Using the `data` option in the component's options object",
-    ],
-    correctAnswer: "Using the `ref` function from Vue composition API",
-  },
-  {
-    question: "What is the purpose of the v-bind directive in Vue 3 templates?",
-    options: [
-      "To bind data to an element's attribute",
-      "To create a custom directive",
-      "To bind a component method to a DOM event",
-    ],
-    correctAnswer: "To bind a component method to a DOM event",
-  },
-];
-
 // refs
 const currentQuestion = ref<number>(0);
 const correctAnswersQty = ref<number>(0);
 const selectedElement = ref<null | string>(null);
+const resultRef: Ref<HTMLElement | null> = ref(null);
+const questionsRef: Ref<HTMLElement | null> = ref(null);
+
+// sounds
+const popCorrect = useSound(popCorrectSound, { volume: 0.4 });
+const popIncorrect = useSound(popIncorrectSound, { volume: 0.4 });
+const win = useSound(winSound, { volume: 0.4 });
+const lose = useSound(loseSound, { volume: 0.4 });
 
 // computed
 const calculatedQuizResult = computed((): QuizResultType => {
   const percentageCorrect = (correctAnswersQty.value / QUESTIONS.length) * 100;
 
   if (percentageCorrect >= 80) {
+    setTimeout(() => (win.play(), scrollToHandler(resultRef)), 0);
     return {
       isPassed: true,
       msg: `Congratulations! Your quiz result is ${percentageCorrect.toFixed(
@@ -75,6 +40,7 @@ const calculatedQuizResult = computed((): QuizResultType => {
       )}% and it's equal to or above 80%.`,
     };
   } else {
+    setTimeout(() => (lose.play(), scrollToHandler(resultRef)), 0);
     return {
       isPassed: false,
       msg: `Your quiz result is ${percentageCorrect.toFixed(
@@ -95,6 +61,13 @@ const isAnswerCorrect = computed((): boolean => {
 
   if (isCorrect) {
     correctAnswersQty.value++;
+    if (hasNextQuestion.value) {
+      setTimeout(() => popCorrect.play(), 0);
+    }
+  } else {
+    if (hasNextQuestion.value) {
+      setTimeout(() => popIncorrect.play(), 0);
+    }
   }
 
   if (selectedElement.value && hasNextQuestion.value) {
@@ -107,7 +80,15 @@ const isAnswerCorrect = computed((): boolean => {
   return isCorrect;
 });
 
-const tryAgainHandler = (): void => {
+watch(currentQuestion, () => {
+  if (hasNextQuestion.value) {
+    return setTimeout(() => {
+      scrollToHandler(questionsRef);
+    }, 0);
+  }
+});
+
+const tryAgainHandler = () => {
   currentQuestion.value = 0;
   correctAnswersQty.value = 0;
   selectedElement.value = null;
@@ -119,7 +100,7 @@ const tryAgainHandler = (): void => {
     <h1>The Quiz</h1>
     <h3>{{ QUESTIONS[currentQuestion].question }}</h3>
 
-    <ul>
+    <ul ref="questionsRef">
       <li
         v-for="el in QUESTIONS[currentQuestion].options"
         :key="el"
@@ -145,7 +126,11 @@ const tryAgainHandler = (): void => {
       </li>
     </ul>
 
-    <div v-if="!hasNextQuestion && selectedElement" class="result">
+    <div
+      ref="resultRef"
+      v-if="!hasNextQuestion && selectedElement"
+      class="result"
+    >
       <h2 :class="{ notPassedText: !calculatedQuizResult.isPassed }">
         {{
           calculatedQuizResult.isPassed
@@ -166,6 +151,10 @@ const tryAgainHandler = (): void => {
 </template>
 
 <style scoped>
+* {
+  color: #e3e3e3;
+}
+
 h1 {
   margin-bottom: 1rem;
 }
@@ -199,7 +188,7 @@ label:not(:is(.isAnswerCorrect, .selectedEl)):hover {
 }
 
 .fadeOutLabels {
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   animation: fadeOutLabels;
   transition: 0.1s ease-in-out;
   background-color: transparent;
@@ -239,12 +228,17 @@ li {
 .selectedEl {
   background-color: #e46962;
   animation-name: wrongAnswer;
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   transition: 0.1s ease-out;
 }
 @keyframes wrongAnswer {
   0% {
     background-color: rgba(112, 128, 144, 0.5);
+    color: #fff0f0;
+  }
+  25% {
+    transform: translate(-2px, -2px);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   }
   100% {
     background-color: #e46962;
@@ -255,7 +249,7 @@ li {
   font-weight: bold;
   color: black;
   background-color: #aae9cd;
-  animation-duration: 0.5s;
+  animation-duration: 0.3s;
   transition: 0.1s ease-out;
 }
 
@@ -282,12 +276,11 @@ li {
   margin: 1rem auto 0 auto;
   display: block;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0.5rem 2rem;
   border: none;
   border-radius: 0.2rem;
   background-color: transparent;
-  box-shadow: 0px 0px 0.2rem rgb(31, 31, 31, 0);
   color: #dc362e;
   transition: 0.3s ease-out;
 }
@@ -296,13 +289,13 @@ li {
   transition: 0.1s ease-in-out;
   background-color: #fff0f0;
   color: #dc362e !important;
-  box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
   cursor: pointer;
 }
 
 .questionsRemain {
   color: #aae9cd;
   text-align: right;
-  margin-right: 1.4rem;
+  padding: 0.5rem 0.5rem;
 }
 </style>

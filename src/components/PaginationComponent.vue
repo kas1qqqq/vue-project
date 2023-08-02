@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs } from 'vue'
+import { toRefs, ref, watch, type Ref } from "vue";
 
 const props = defineProps({
   numberOfPages: {
@@ -10,25 +10,25 @@ const props = defineProps({
     required: true,
     type: Number,
   },
-})
+});
 
-const { numberOfPages, modelValue: currentPage } = toRefs(props)
+const { numberOfPages, modelValue: currentPage } = toRefs(props);
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
 const setCurrentPage = (number: Number) => {
-  emit('update:modelValue', number)
-}
+  emit("update:modelValue", number);
+};
 
 const previous = () => {
-  if (currentPage.value === 1) return
-  emit('update:modelValue', currentPage.value - 1)
-}
+  if (currentPage.value === 1) return;
+  emit("update:modelValue", currentPage.value - 1);
+};
 
 const next = () => {
-  if (currentPage.value >= numberOfPages.value) return
-  emit('update:modelValue', currentPage.value + 1)
-}
+  if (currentPage.value >= numberOfPages.value) return;
+  emit("update:modelValue", currentPage.value + 1);
+};
 </script>
 
 <template>
@@ -80,16 +80,15 @@ const next = () => {
 }
 
 .pagination {
-  background-color: rgb(35, 35, 35, 0.8);
   margin-top: 1.4rem;
   padding: 0.5rem;
+  color: #e3e3e3;
   display: flex;
   gap: 0.4rem;
   align-items: center;
   border: none;
   align-content: center;
   border-radius: 0.2rem;
-  box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
 }
 
 .page-item {
@@ -101,13 +100,14 @@ const next = () => {
 .page-link {
   border-radius: 0.2rem;
   padding: 0.6rem 0.9rem;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .page-link:hover {
   color: seagreen;
   background-color: rgb(45, 45, 45);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
   border: none;
 }
 
@@ -115,12 +115,13 @@ const next = () => {
   background-color: seagreen !important;
   color: whitesmoke !important;
 }
+
 .active-page:hover {
   border: none;
 }
 
 .disabled .page-link {
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .disabled {

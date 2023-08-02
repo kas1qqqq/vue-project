@@ -7,14 +7,14 @@ import {
   BarElement,
   CategoryScale,
   LinearScale,
-} from 'chart.js'
-import { ref, computed } from 'vue'
-import axios from 'axios'
-import { Bar } from 'vue-chartjs'
+} from "chart.js"
+import { ref, computed } from "vue"
+import axios from "axios"
+import { Bar } from "vue-chartjs"
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
-const URL: string = 'https://jsonplaceholder.typicode.com/comments'
+const URL: string = "https://jsonplaceholder.typicode.com/comments"
 
 const isLoaded = ref<boolean | null>(null)
 const isError = ref<boolean | null>(null)
@@ -27,8 +27,8 @@ const data = computed(() => ({
     {
       label: "Length of the user's email",
       data: chartData.value,
-      backgroundColor: '#539BF5',
-      borderColor: 'rgb(45, 45, 45)',
+      backgroundColor: "#539BF5",
+      borderColor: "rgb(45, 45, 45)",
       borderWidth: 1,
       borderRadius: 4,
     },
@@ -52,7 +52,7 @@ async function getChartData() {
     chartLabels.value = res.data
       .map(
         (e: { email: string }) =>
-          `${e.email.substring(0, e.email.indexOf('@'))}`
+          `${e.email.substring(0, e.email.indexOf("@"))}`
       )
       .slice(0, 5)
 
@@ -60,7 +60,7 @@ async function getChartData() {
   } catch (e: any) {
     isError.value = true
     console.error(
-      'There was an artificial error in ChartApi. Please try again.'
+      "There was an artificial error in ChartApi. Please try again."
     )
   }
 }
@@ -70,10 +70,10 @@ getChartData()
 function timeout() {
   return new Promise<void>((resolve, reject) => {
     setTimeout(() => {
-      if (Math.random() > 0.3) {
+      if (Math.random() > 0.2) {
         resolve()
       } else {
-        reject(new Error('Oops! Error encountered. Cannot load the list.'))
+        reject(new Error("Oops! Error encountered. Cannot load the list."))
       }
     }, 300)
   })
@@ -121,26 +121,21 @@ function timeout() {
 
 .btn {
   min-width: 10rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 0.5rem 2rem;
   margin: 0 4rem;
   border: none;
   border-radius: 0.2rem;
-  background-color: rgb(31, 31, 31);
-  box-shadow: 0px 0px 0.2rem rgb(31, 31, 31);
+  background-color: rgb(227, 227, 227, 0.1);
   color: hsla(160, 75%, 37%, 1);
 }
 
 .btn:hover {
   transition: 0.1s ease-in-out;
-  background-color: rgb(35, 35, 35);
-  box-shadow: 0px 0px 0.2rem rgb(35, 35, 35);
+  color: #aae9cd;
+  background-color: rgb(227, 227, 227, 0.2);
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
   cursor: pointer;
-}
-
-.btn:active {
-  box-shadow: 0px 0px 0.3rem rgb(45, 45, 45);
-  color: rgba(46, 139, 86, 0.79);
 }
 
 .chart-loading {
@@ -152,7 +147,6 @@ function timeout() {
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
-
 @keyframes chart-loading {
   0% {
     opacity: 0.6;
