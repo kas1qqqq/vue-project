@@ -279,6 +279,7 @@ header {
 }
 
 .all-component-mount {
+  width: 18rem;
   position: fixed;
   top: 50%;
   left: 50%;

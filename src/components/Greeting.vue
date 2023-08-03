@@ -84,10 +84,4 @@ button {
 a.router-link-exact-active {
   color: #a1a1a1;
 }
-
-@media (max-width: 480px) {
-  .username {
-    display: none;
-  }
-}
 </style>

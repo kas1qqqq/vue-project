@@ -237,7 +237,7 @@ watch(currentPage, () => {
   cursor: pointer;
 }
 
-.btn-sort:hover {
+.btn-sort:not(.btn-sort-clicked):hover {
   transition: 0.1s ease-in-out;
   color: #aae9cd;
   background-color: rgb(227, 227, 227, 0.2);
@@ -246,9 +246,14 @@ watch(currentPage, () => {
 }
 
 .btn-sort-clicked {
-  background-color: rgb(45, 45, 45);
-  box-shadow: 0px 0px 0.2rem rgb(45, 45, 45);
+  background-color: rgb(40, 40, 40);
   color: rgba(46, 139, 86, 0.59);
+  cursor: pointer;
+}
+
+.btn-sort-clicked:hover {
+  color: #aae9cd;
+  box-shadow: 0px 0px 0.2rem rgb(227, 227, 227, 0.2);
 }
 
 .wrapper-skateboarding {
