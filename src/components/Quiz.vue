@@ -1,6 +1,9 @@
 <script lang="ts" setup>
-import { useSound } from "@vueuse/sound";
 import { ref, computed, watch, type Ref } from "vue";
+import { useSound } from "@vueuse/sound";
+
+// components
+import ProgressBar from "./ProgressBar.vue";
 
 import { QUESTIONS } from "@/utils/quizQuestions";
 import { scrollToHandler } from "@/utils/scrollToHandler";
@@ -17,9 +20,11 @@ interface QuizResultType {
 // refs
 const currentQuestion = ref<number>(0);
 const correctAnswersQty = ref<number>(0);
+const answerAnyQuestionsQty = ref(0);
 const selectedElement = ref<null | string>(null);
 const resultRef: Ref<HTMLElement | null> = ref(null);
 const questionsRef: Ref<HTMLElement | null> = ref(null);
+const totalQuestions = QUESTIONS.length;
 
 // sounds
 const popCorrect = useSound(popCorrectSound, { volume: 0.4 });
@@ -77,9 +82,12 @@ const isAnswerCorrect = computed((): boolean => {
     }, 500);
   }
 
+  answerAnyQuestionHandler();
+
   return isCorrect;
 });
 
+// watchers
 watch(currentQuestion, () => {
   if (hasNextQuestion.value) {
     return setTimeout(() => {
@@ -88,9 +96,16 @@ watch(currentQuestion, () => {
   }
 });
 
+const answerAnyQuestionHandler = () => {
+  if (answerAnyQuestionsQty.value < totalQuestions) {
+    answerAnyQuestionsQty.value++;
+  }
+};
+
 const tryAgainHandler = () => {
   currentQuestion.value = 0;
   correctAnswersQty.value = 0;
+  answerAnyQuestionsQty.value = 0;
   selectedElement.value = null;
 };
 </script>
@@ -101,6 +116,10 @@ const tryAgainHandler = () => {
     <h3>{{ QUESTIONS[currentQuestion].question }}</h3>
 
     <ul ref="questionsRef">
+      <ProgressBar
+        :totalQuestions="totalQuestions"
+        :answerAnyQuestionsQty="answerAnyQuestionsQty"
+      />
       <li
         v-for="el in QUESTIONS[currentQuestion].options"
         :key="el"

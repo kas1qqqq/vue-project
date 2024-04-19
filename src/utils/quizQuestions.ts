@@ -1,10 +1,10 @@
 interface QuestionsType {
-  question: string
-  options: string[]
-  correctAnswer: string
+  question: string;
+  options: string[];
+  correctAnswer: string;
 }
 
-export const QUESTIONS: QuestionsType[] = [
+export const questions: QuestionsType[] = [
   {
     question: "What is the capital of France?",
     options: ["Berlin", "London", "Paris"],
@@ -25,9 +25,9 @@ export const QUESTIONS: QuestionsType[] = [
     correctAnswer: "Managing state and logic in components",
   },
   {
-    question: "What is the root component in a Vue 3 application?",
-    options: ["main.js", "App.vue", "index.html"],
-    correctAnswer: "App.vue",
+    question: "In JavaScript, what primitive data type can hold whole numbers?",
+    options: ["String", "Number", "Boolean"],
+    correctAnswer: "Number",
   },
   {
     question:
@@ -40,12 +40,35 @@ export const QUESTIONS: QuestionsType[] = [
     correctAnswer: "Using the `ref` function from Vue composition API",
   },
   {
-    question: "What is the purpose of the v-bind directive in Vue 3 templates?",
-    options: [
-      "To bind data to an element's attribute",
-      "To create a custom directive",
-      "To bind a component method to a DOM event",
-    ],
-    correctAnswer: "To bind a component method to a DOM event",
+    question: "What is the highest mountain in the solar system?",
+    options: ["Mount Everest", "Olympus Mons", "K2"],
+    correctAnswer: "Olympus Mons",
   },
-]
+  {
+    question: "What is the largest living organism on Earth?",
+    options: ["Blue Whale", "Giant Sequoia Tree", "African Bush Elephant"],
+    correctAnswer: "Giant Sequoia Tree",
+  },
+  {
+    question: "What is the currency of Japan?",
+    options: ["Euro", "Yuan", "Yen"],
+    correctAnswer: "Yen",
+  },
+  {
+    question:
+      "In CSS, what property controls the spacing between lines of text?",
+    options: ["margin", "padding", "line-height"],
+    correctAnswer: "line-height",
+  },
+  {
+    question: "What is the capital of Australia?",
+    options: ["Sydney", "Melbourne", "Canberra"],
+    correctAnswer: "Canberra",
+  },
+];
+
+function randomizeQuestions(questions: QuestionsType[]) {
+  return questions.sort(() => Math.random() - 0.5);
+}
+
+export const QUESTIONS = randomizeQuestions(questions);

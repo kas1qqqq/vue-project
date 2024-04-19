@@ -132,10 +132,7 @@ const signUpHandler = async () => {
 };
 
 onMounted(() => {
-  setTimeout(
-    () => (isCreateAccVisible.value = !isCreateAccVisible.value),
-    1000
-  );
+  isCreateAccVisible.value = !isCreateAccVisible.value;
 });
 </script>
 
